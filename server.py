@@ -1,6 +1,5 @@
 '''
 TODO: Estruturar o quadro a ser enviado de acordo com a especificacao do trabalho
-      Quando enviar um NACK esperar outra mesangem para fazer a checagem
       Dar um jeito de criar uma falha na mensagem
 
 '''
@@ -43,18 +42,23 @@ server_socket.listen(1)
 # esperando client conectar para criar socket de conexao
 connection_socket = server_socket.accept()[0]
 
-# recebendo dados do client
-request = connection_socket.recv(1024)
+# flag que aguarda um novo pacote, se o que chegou estiver errado
+response = False
 
-# separando crc da mensagem e verificando a consistencia da mensagem
-crc = request[16:].decode("utf-8")
-message = request[:16].decode("utf-8")
-response = crc_check(message, polynomial_bitstring, crc)
+# Problema: se agente forçar o erro no pacote, ele entrará em loop
+while not response:
+    # recebendo dados do client
+    request = connection_socket.recv(1024)
 
-# enviando ack ou nack(todo) para client
-if response:
-    connection_socket.send("ACK".encode())
-else:
-    connection_socket.send("NACK".encode())
+    # separando crc da mensagem e verificando a consistencia da mensagem
+    crc = request[16:].decode("utf-8")
+    message = request[:16].decode("utf-8")
+    response = crc_check(message, polynomial_bitstring, crc)
+
+    # enviando ack ou nack para client
+    if response:
+        connection_socket.send("ACK".encode())
+    else:
+        connection_socket.send("NACK".encode())
 
 connection_socket.close() 
