@@ -1,6 +1,5 @@
 '''
-TODO: Reenviar os dados quando receber um NACK
-      Estruturar o quadro a ser enviado de acordo com a especificacao do trabalho
+TODO: Estruturar o quadro a ser enviado de acordo com a especificacao do trabalho
       Dar um jeito de criar uma falha na mensagem
 
 '''
@@ -36,17 +35,23 @@ server_port = 12000
 client_socket = socket(AF_INET, SOCK_STREAM)
 client_socket.connect((server_name, server_port))
 
-# enviando a mensagem e o crc gerado 
-crc_message = "0000000001000001" + crc_remainder("0000000001000001", polynomial_bitstring, "0")
-client_socket.send(crc_message.encode())
+# flag de reenvio de pacote
+resend = True
 
-# esperando confirmacao ou falha do servidor
-response = client_socket.recv(1024)
+while resend:
+    # enviando a mensagem e o crc gerado 
+    crc_message = "0000000001000001" + crc_remainder("0000000001000001", polynomial_bitstring, "0")
+    client_socket.send(crc_message.encode())
 
-# checando response do servidor ack ou nack(todo)
-if response == "ACK".encode():
-    print("mensagem recebida pelo servidor com sucesso")
-else:
-    print("mensagem corrompida, enviar novamente")
+    # esperando confirmacao ou falha do servidor
+    response = client_socket.recv(1024)
+
+    # checando response do servidor ack ou nack
+    if response == "ACK".encode():
+        print("mensagem recebida pelo servidor com sucesso")
+        resend = False
+    else:
+        print("mensagem corrompida, enviar novamente")
+        resend = True
 
 client_socket.close()
