@@ -1,7 +1,14 @@
 class ack_frame:
     def __init__(self, sequence, destination_address, source_address):
-        self.__bin =  (0x7E << 72) | (sequence << 64) | (destination_address << 32) | (source_address)
-        #             1 byte           1 byte                   4 bytes                  4 bytes
+        sequence &= 0xFF # 1 byte
+        destination_address &= 0xFFFFFFFF # 4 bytes
+        source_address &= 0xFFFFFFFF # 4 bytes
+
+        self.__bin =  \
+            (0x7E << 72) | \
+            (sequence << 64) | \
+            (destination_address << 32) | \
+            (source_address)
     
     def get_sequence(self):
         return (self.__bin >> 64) & 0xFF
