@@ -5,6 +5,7 @@ TODO: Estruturar o quadro a ser enviado de acordo com a especificacao do trabalh
 '''
 
 from socket import *
+import random
 
 # polinomio crc
 polynomial_bitstring = "10100000000000011"
@@ -41,6 +42,11 @@ resend = True
 while resend:
     # enviando a mensagem e o crc gerado 
     crc_message = "0000000001000001" + crc_remainder("0000000001000001", polynomial_bitstring, "0")
+
+    # randomizando um erro na mensagem que sera enviada
+    if random.randrange(2) == 1:
+        crc_message = crc_message[::-1]
+
     client_socket.send(crc_message.encode())
 
     # esperando confirmacao ou falha do servidor
