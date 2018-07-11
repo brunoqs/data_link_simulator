@@ -1,9 +1,58 @@
-# COLOCAR PAYLOAD EM <class 'str'>
+#
+# quase tudo ok - só crc que não funciona
+#
+
+from ipaddress import IPv4Address
 
 class data_frame:
-    def __init__(self, bin_flow_recv):
-        self.__bin =  bin_flow_recv
+    __DEL = 0x7E
+    __POLYNOM_GEN = 0b11000000000000101
 
+    def __init__(self, sequence=None, destination_address=None, source_address=None, payload=None, bin_flow_recv=None):
+        if bin_flow_recv != None:
+            if type(bin_flow_recv) != int:
+                raise TypeError('bin_flow_recv must be int.')
+
+            self.__bin =  bin_flow_recv
+        else:
+            if type(sequence) != int:
+                raise TypeError('sequence must be int.')
+            if type(destination_address) != IPv4Address:
+                raise TypeError('destination_address must be IPv4Address.')
+            if type(source_address) != IPv4Address:
+                raise TypeError('source_address must be IPv4Address.')
+            if type(payload) != str:
+                raise TypeError('payload must be str.')
+            if len(bytes(payload, encoding='utf-8')) > 255:
+                raise ValueError('payload lenght must be max 255.')
+            if sequence & 0b01111110 != 0:
+                raise ValueError('sequence is wrong.')
+
+            lenght = len(bytes(payload, encoding='utf-8')) # 1 byte
+            sequence &= 0xFF # 1 byte
+            destination_address = int(destination_address) # 4 bytes
+            source_address = int(source_address) # 4 bytes
+            payload = data_frame.str_to_bin(payload) # 'lenght' bytes, 0 <= 'lenght' <= 255
+            crc = self.__crc_gen(
+                lenght << ((9 + lenght) * 8) | \
+                sequence << ((8 + lenght) * 8) | \
+                destination_address << ((4 + lenght) * 8) | \
+                source_address << (lenght * 8) | \
+                payload
+            ) # 2 bytes
+
+            self.__bin =  \
+                (self.__DEL << ((12 + lenght) * 8)) | \
+                (lenght << ((11 + lenght) * 8)) | \
+                (sequence << ((10 + lenght) * 8)) | \
+                (destination_address << ((6 + lenght) * 8)) | \
+                (source_address << ((2 + lenght) * 8)) | \
+                (payload << 16) | \
+                (crc)
+
+    def get_frame(self):
+        return self.__bin
+    
     def get_lenght(self):
         n = self.__bin.bit_length() - 15 # -16+1 = 15, pq 0x7E = 0111 1110, 0 a esq. descarta na cpu
         return (self.__bin >> n) & 0xFF
@@ -27,14 +76,30 @@ class data_frame:
     def get_crc(self):
         return self.__bin & 0xFFFF
     
-    def __str_to_bin(self, payload):
+    @staticmethod
+    def str_to_bin(payload):
         return int(bytes(payload, encoding='utf-8').hex(), base=16)
 
-    def __bin_to_str(self, payload):
+    @staticmethod
+    def bin_to_str(payload):
         return bytearray.fromhex(hex(payload).lstrip('0x')).decode('utf-8')
 
-    def __gen_crc(self, message):
-        return 0x0000
+    def __crc_gen(self, message):
+        bitstring = bin(message).lstrip('0b')
+        polynom = bin(self.__POLYNOM_GEN).lstrip('0b')
+        crc_bitstring = self.__crc_remainder(bitstring, polynom, '0')
+        return int(crc_bitstring, base=2)
+    
+    def crc_check(self):
+        lenght = bin(self.get_lenght()).lstrip('0b')
+        sequence = bin(self.get_sequence()).lstrip('0b')
+        destination = bin(self.get_destination_addr()).lstrip('0b')
+        source = bin(self.get_source_addr()).lstrip('0b')
+        payload = bin(self.get_payload()).lstrip('0b')
+        polynom = bin(self.__POLYNOM_GEN).lstrip('0b')
+        check = bin(self.get_crc()).lstrip('0b')
+        bitstring = lenght + sequence + destination + source + payload
+        return self.__crc_check(bitstring, polynom, check)
 
     def __crc_check(self, input_bitstring, polynomial_bitstring, check_value):
         '''
