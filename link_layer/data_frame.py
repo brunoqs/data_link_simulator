@@ -4,7 +4,7 @@
 
 from ipaddress import IPv4Address
 
-class data_frame:
+class data_frame():
     __DEL = 0x7E
     __POLYNOM_GEN = 0b11000000000000101
 

@@ -1,7 +1,7 @@
 from socket import *
 import random
 
-class physical_link:
+class physical_link():
 	def __init__(self, bin):
 		self.bin = bin
 	
@@ -15,6 +15,8 @@ class physical_link:
 		lenght_bin = len(self.bin) 
 		for i in range(0,lenght_bin, 4):
 			client_socket.send(self.bin[i:i+4].encode())
+
+		print("before send: " + str(self.bin))
 
 		client_socket.close()
 
@@ -33,6 +35,6 @@ class physical_link:
 			request = connection_socket.recv(1024)
 			frame += request.decode("utf-8")
 
-		print(frame)
+		print("after send: " + str(frame))
 
 		connection_socket.close()
