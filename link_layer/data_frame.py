@@ -1,5 +1,5 @@
 #
-# quase tudo ok - só crc que não funciona
+# testado 100% ok
 #
 
 from ipaddress import IPv4Address
@@ -33,13 +33,15 @@ class data_frame:
             destination_address = int(destination_address) # 4 bytes
             source_address = int(source_address) # 4 bytes
             payload = data_frame.str_to_bin(payload) # 'lenght' bytes, 0 <= 'lenght' <= 255
-            crc = self.__crc_gen(
+            
+            crc_arg =  \
                 lenght << ((9 + lenght) * 8) | \
                 sequence << ((8 + lenght) * 8) | \
                 destination_address << ((4 + lenght) * 8) | \
                 source_address << (lenght * 8) | \
                 payload
-            ) # 2 bytes
+            
+            crc = self.__crc_gen(crc_arg) # 2 bytes
 
             self.__bin =  \
                 (self.__DEL << ((12 + lenght) * 8)) | \
@@ -91,14 +93,10 @@ class data_frame:
         return int(crc_bitstring, base=2)
     
     def crc_check(self):
-        lenght = bin(self.get_lenght()).lstrip('0b')
-        sequence = bin(self.get_sequence()).lstrip('0b')
-        destination = bin(self.get_destination_addr()).lstrip('0b')
-        source = bin(self.get_source_addr()).lstrip('0b')
-        payload = bin(self.get_payload()).lstrip('0b')
+        bitstring_frame = bin(self.__bin).lstrip('0b')
+        bitstring = bitstring_frame[8:-16]
         polynom = bin(self.__POLYNOM_GEN).lstrip('0b')
-        check = bin(self.get_crc()).lstrip('0b')
-        bitstring = lenght + sequence + destination + source + payload
+        check = bitstring_frame[-16:]
         return self.__crc_check(bitstring, polynom, check)
 
     def __crc_check(self, input_bitstring, polynomial_bitstring, check_value):
