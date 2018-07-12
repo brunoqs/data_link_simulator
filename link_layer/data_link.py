@@ -1,9 +1,7 @@
-from data_frame import *
-from ack_frame import *
+from .data_frame import *
+from .ack_frame import *
 
-import sys
-sys.path.append('../physical_layer/')
-from physical_link import *
+from physical_layer import physical_link
 
 from ipaddress import IPv4Address
 
