@@ -1,10 +1,6 @@
-#
-# testado 100% ok
-#
-
 from ipaddress import IPv4Address
 
-class ack_frame(object):
+class ack_frame:
     __DEL = 0x7E
 
     def __init__(self, sequence, destination_address, source_address):
