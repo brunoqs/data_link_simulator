@@ -1,53 +1,43 @@
-from socket import *
+from socket import socket
+from socket import AF_INET
+from socket import SOCK_STREAM
+from ipaddress import IPv4Address
+
 import random
 import time
 
 from link_layer import data_frame
 from link_layer import ack_frame
 
-class physical_link(data_frame, ack_frame):
-	def __init__(self, bin):
-		self.bin = bin
-	
-	def F_Data_Request(self, octeto):
-		server_name = "127.0.0.1"
-		server_port = 12000
-
-		client_socket = socket(AF_INET, SOCK_STREAM)
-		client_socket.connect((server_name, server_port))
+class physical_link:
+	def __init__(self, destination_addr, source_addr=None):
+		if type(destination_addr) != IPv4Address:
+			raise TypeError('destination_addr must be IPv4Address.')
+		if type(source_addr) != IPv4Address:
+			raise TypeError('source_addr must be IPv4Address.')
 		
-		lenght_bin = len(self.bin) 
-		for i in range(0,lenght_bin, 4):
-			client_socket.send(self.bin[i:i+4].encode())
-			time.sleep(0.01)
-		client_socket.send("None".encode())
+		self.__dst = destination_addr
+		self.__src = source_addr
+		self.__port = 12000
+		self.__socket = socket(AF_INET, SOCK_STREAM)
 
-		print("before send: " + str(self.bin))
+	def F_Data_Request(self, octeto):
+		self.__socket.connect((self.__dst, self.__port))
+		self.__socket.send(octeto.encode())
+		time.sleep(0.01)
 
-		client_socket.close()
+	def F_Data_Indication(self):
+		self.__socket.bind((self.__src, self.__port))
+		self.__socket.listen(1)
 
-	def F_Data_Indication(self, octeto):
-		server_name = "127.0.0.1"
-		server_port = 12000
+		connection_socket = self.__socket.accept()[0]
 
-		server_socket = socket(AF_INET, SOCK_STREAM)
-		server_socket.bind((server_name, server_port))
-		server_socket.listen(1)    
+		recv = connection_socket.recv(8)
 
-		connection_socket = server_socket.accept()[0]
+		return recv
+	
+	def close(self):
+		self.__socket.close()
 
-		frame = ""
-		flag = True
-		while flag:
-			request = connection_socket.recv(1024)
-			print(request)
-			if request != "None".encode():
-				frame += request.decode("utf-8")
-			else:
-				flag = False
-
-		print("after send: " + str(frame))
-		self.set_frame(self.str_to_bin(frame))
-		print (self.crc_check())
-
-		connection_socket.close()
+	def fin_data(self):
+		self.__socket.send("".encode())
