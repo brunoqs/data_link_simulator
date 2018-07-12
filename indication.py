@@ -1,19 +1,15 @@
 '''
 TODO: Estruturar o quadro a ser enviado de acordo com a especificacao do trabalho
       Dar um jeito de criar uma falha na mensagem
-
 '''
-
+'''
 from socket import *
 
 # polinomio crc
 polynomial_bitstring = "10100000000000011"
 
 def crc_check(input_bitstring, polynomial_bitstring, check_value):
-    '''
-    Calculates the CRC check of a string of bits using a chosen polynomial.
-    initial_filler should be '1' or '0'.
-    '''
+
     len_input = len(input_bitstring)
     initial_padding = check_value
     input_padded_array = list(input_bitstring + initial_padding)
@@ -62,3 +58,10 @@ while not response:
         connection_socket.send("NACK".encode())
 
 connection_socket.close() 
+'''
+
+from link_layer import data_link
+
+x = data_link()
+
+x.Data_Indication("", "", "")

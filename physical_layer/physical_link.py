@@ -1,9 +1,11 @@
 from socket import *
 import random
+import time
 
 class physical_link():
 	def __init__(self, bin):
 		self.bin = bin
+		self.frame_recv = ""
 	
 	def F_Data_Request(self, octeto):
 		server_name = "127.0.0.1"
@@ -15,6 +17,8 @@ class physical_link():
 		lenght_bin = len(self.bin) 
 		for i in range(0,lenght_bin, 4):
 			client_socket.send(self.bin[i:i+4].encode())
+			time.sleep(0.01)
+		client_socket.send("None".encode())
 
 		print("before send: " + str(self.bin))
 
@@ -31,10 +35,16 @@ class physical_link():
 		connection_socket = server_socket.accept()[0]
 
 		frame = ""
-		while len(frame) != len(self.bin):
+		flag = True
+		while flag:
 			request = connection_socket.recv(1024)
-			frame += request.decode("utf-8")
+			print(request)
+			if request != "None".encode():
+				frame += request.decode("utf-8")
+			else:
+				flag = False
 
 		print("after send: " + str(frame))
+		self.frame_recv = frame
 
 		connection_socket.close()
