@@ -2,10 +2,12 @@ from socket import *
 import random
 import time
 
-class physical_link():
+from link_layer import data_frame
+from link_layer import ack_frame
+
+class physical_link(data_frame, ack_frame):
 	def __init__(self, bin):
 		self.bin = bin
-		self.frame_recv = ""
 	
 	def F_Data_Request(self, octeto):
 		server_name = "127.0.0.1"
@@ -45,6 +47,7 @@ class physical_link():
 				flag = False
 
 		print("after send: " + str(frame))
-		self.frame_recv = frame
+		self.set_frame(self.str_to_bin(frame))
+		print (self.crc_check())
 
 		connection_socket.close()

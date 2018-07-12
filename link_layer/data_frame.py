@@ -4,7 +4,7 @@
 
 from ipaddress import IPv4Address
 
-class data_frame():
+class data_frame(object):
     __DEL = 0x7E
     __POLYNOM_GEN = 0b11000000000000101
 
@@ -51,6 +51,9 @@ class data_frame():
                 (source_address << ((2 + lenght) * 8)) | \
                 (payload << 16) | \
                 (crc)
+
+    def set_frame(self, bin):
+        self.__bin = bin
 
     def get_frame(self):
         return self.__bin

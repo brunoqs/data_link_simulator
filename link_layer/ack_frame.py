@@ -4,7 +4,7 @@
 
 from ipaddress import IPv4Address
 
-class ack_frame():
+class ack_frame(object):
     __DEL = 0x7E
 
     def __init__(self, sequence, destination_address, source_address):
