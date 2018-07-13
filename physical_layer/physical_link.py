@@ -21,13 +21,13 @@ class physical_link:
 		self.__port = port
 		self.__socket = socket(AF_INET, SOCK_STREAM)
 
-		# entra quando o Data_Request e chamado
+		# entra quando o Data_Indication e chamado
 		if source_addr != IPv4Address('0.0.0.0'):
 			self.__socket.bind((str(self.__src), self.__port))
 			self.__socket.listen(1)
 			self.__connection_socket = self.__socket.accept()[0]
 		else:
-			# entra quando o Data_Indication e chamado
+			# entra quando o Data_Request e chamado
 			self.__socket.connect((str(self.__dst), self.__port))
 
 
