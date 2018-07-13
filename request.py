@@ -59,7 +59,6 @@ while resend:
 client_socket.close()'''
 
 from link_layer import data_link
+from ipaddress import IPv4Address
 
-x = data_link()
-
-x.Data_Request("", "")
+data_link.Data_Request(IPv4Address("127.0.0.1"), "teste")

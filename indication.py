@@ -61,7 +61,6 @@ connection_socket.close()
 '''
 
 from link_layer import data_link
+from ipaddress import IPv4Address
 
-x = data_link()
-
-x.Data_Indication("", "", "")
+data_link.Data_Indication(IPv4Address("127.0.0.1"), IPv4Address("127.0.0.1"))

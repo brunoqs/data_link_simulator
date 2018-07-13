@@ -1,57 +1,47 @@
+from socket import socket
+from socket import AF_INET
+from socket import SOCK_STREAM
+from ipaddress import IPv4Address
+
 import random
 import time
 
 from link_layer import data_frame
 from link_layer import ack_frame
 
-from socket import socket
-from socket import AF_INET
-from socket import SOCK_STREAM
-
-class physical_link(data_frame, ack_frame):
-	def __init__(self, bin):
-		self.__bin = bin
-		self.__frame_recv = ""
-	
-	def F_Data_Request(self, octeto):
-		server_name = "127.0.0.1"
-		server_port = 12000
-
-		client_socket = socket(AF_INET, SOCK_STREAM)
-		client_socket.connect((server_name, server_port))
+class physical_link:
+	def __init__(self, destination_addr, source_addr=IPv4Address('0.0.0.0'), port=None):
+		if type(destination_addr) != IPv4Address:
+			raise TypeError('destination_addr must be IPv4Address.')
+		if type(source_addr) != IPv4Address:
+			raise TypeError('source_addr must be IPv4Address.')
 		
-		lenght_bin = len(self.__bin) 
-		for i in range(0,lenght_bin, 4):
-			client_socket.send(self.__bin[i:i+4].encode())
-			time.sleep(0.01)
-		client_socket.send("None".encode())
+		self.__dst = destination_addr
+		self.__src = source_addr
+		self.__port = port
+		self.__socket = socket(AF_INET, SOCK_STREAM)
 
-		print("before send: " + str(self.__bin))
+		# entra quando o Data_Request e chamado
+		if source_addr != IPv4Address('0.0.0.0'):
+			self.__socket.bind((str(self.__src), self.__port))
+			self.__socket.listen(1)
+			self.__connection_socket = self.__socket.accept()[0]
+		else:
+			# entra quando o Data_Indication e chamado
+			self.__socket.connect((str(self.__dst), self.__port))
 
-		client_socket.close()
 
-	def F_Data_Indication(self, octeto):
-		server_name = "127.0.0.1"
-		server_port = 12000
+	def F_Data_Request(self, octeto):
+		self.__socket.send(octeto.encode())
+		time.sleep(0.01)
 
-		server_socket = socket(AF_INET, SOCK_STREAM)
-		server_socket.bind((server_name, server_port))
-		server_socket.listen(1)    
+	def F_Data_Indication(self):
+		recv = self.__connection_socket.recv(8)
 
-		connection_socket = server_socket.accept()[0]
+		return recv
+	
+	def close(self):
+		self.__socket.close()
 
-		frame = ""
-		flag = True
-		while flag:
-			request = connection_socket.recv(1024)
-			print(request)
-			if request != "None".encode():
-				frame += request.decode("utf-8")
-			else:
-				flag = False
-
-		print("after send: " + str(frame))
-		self.set_frame(self.str_to_bin(frame))
-		print (self.crc_check())
-
-		connection_socket.close()
+	def fin_data(self):
+		self.__socket.send("".encode())
