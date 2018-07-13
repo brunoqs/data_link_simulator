@@ -10,7 +10,7 @@ from link_layer import data_frame
 from link_layer import ack_frame
 
 class physical_link:
-	def __init__(self, destination_addr, source_addr=None):
+	def __init__(self, destination_addr, source_addr=None, port=None):
 		if type(destination_addr) != IPv4Address:
 			raise TypeError('destination_addr must be IPv4Address.')
 		if type(source_addr) != IPv4Address:
@@ -18,7 +18,7 @@ class physical_link:
 		
 		self.__dst = destination_addr
 		self.__src = source_addr
-		self.__port = 12000
+		self.__port = port
 		self.__socket = socket(AF_INET, SOCK_STREAM)
 
 		# entra quando o Data_Request e chamado
