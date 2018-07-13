@@ -22,12 +22,12 @@ class physical_link:
 		self.__socket = socket(AF_INET, SOCK_STREAM)
 
 	def F_Data_Request(self, octeto):
-		self.__socket.connect((self.__dst, self.__port))
+		self.__socket.connect((str(self.__dst), self.__port))
 		self.__socket.send(octeto.encode())
 		time.sleep(0.01)
 
 	def F_Data_Indication(self):
-		self.__socket.bind((self.__src, self.__port))
+		self.__socket.bind((str(self.__src), self.__port))
 		self.__socket.listen(1)
 
 		connection_socket = self.__socket.accept()[0]
