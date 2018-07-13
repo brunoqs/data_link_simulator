@@ -29,9 +29,11 @@ class data_link:
 		flag = True
 		while flag:
 			request = physical.F_Data_Indication()
+			print(request.decode())
 			if request != "".encode():
 				frame += request.decode()
 			else:
 				flag = False
+		print (frame)
 
 		physical.close()

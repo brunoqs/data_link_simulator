@@ -21,18 +21,22 @@ class physical_link:
 		self.__port = 12000
 		self.__socket = socket(AF_INET, SOCK_STREAM)
 
+		# entra quando o Data_Request e chamado
+		if source_addr != IPv4Address('0.0.0.0'):
+			self.__socket.bind((str(self.__src), self.__port))
+			self.__socket.listen(1)
+			self.__connection_socket = self.__socket.accept()[0]
+		else:
+			# entra quando o Data_Indication e chamado
+			self.__socket.connect((str(self.__dst), self.__port))
+
+
 	def F_Data_Request(self, octeto):
-		self.__socket.connect((str(self.__dst), self.__port))
 		self.__socket.send(octeto.encode())
 		time.sleep(0.01)
 
 	def F_Data_Indication(self):
-		self.__socket.bind((str(self.__src), self.__port))
-		self.__socket.listen(1)
-
-		connection_socket = self.__socket.accept()[0]
-
-		recv = connection_socket.recv(8)
+		recv = self.__connection_socket.recv(8)
 
 		return recv
 	
