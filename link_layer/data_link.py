@@ -20,7 +20,6 @@ class data_link:
 			lenght_bin = len(frame_bitstring)
 			for i in range(0, lenght_bin, 8):
 				physical_send.F_Data_Request(frame_bitstring[i:i+8])
-			physical_send.fin_data()
 			physical_send.close()
 
 			# espera 1s para ficar esperando um ack ou nack
@@ -31,7 +30,7 @@ class data_link:
 			while flag:
 				request = physical_recv.F_Data_Indication()
 				print(request.decode())
-				if request != "".encode():
+				if request:
 					ack += request.decode()
 				else:
 					flag = False
@@ -58,7 +57,7 @@ class data_link:
 			while flag:
 				request = physical_recv.F_Data_Indication()
 				print(request.decode())
-				if request != "".encode():
+				if request:
 					frame += request.decode()
 				else:
 					flag = False
@@ -75,7 +74,6 @@ class data_link:
 				lenght_bin = len(ack_bitstring)
 				for i in range(0, lenght_bin, 8):
 					physical_send.F_Data_Request(ack_bitstring[i:i+8])
-				physical_send.fin_data()
 				physical_send.close()
 
 				response = False # nao precisa esperar outro frame
@@ -86,7 +84,6 @@ class data_link:
 				lenght_bin = len(ack_bitstring)
 				for i in range(0, lenght_bin, 8):
 					physical_send.F_Data_Request(ack_bitstring[i:i+8])
-				physical_send.fin_data()
 				physical_send.close()
 
 				response = True # precisa esperar outro frame

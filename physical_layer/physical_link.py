@@ -42,6 +42,3 @@ class physical_link:
 	
 	def close(self):
 		self.__socket.close()
-
-	def fin_data(self):
-		self.__socket.send("".encode())
