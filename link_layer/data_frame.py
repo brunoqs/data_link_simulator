@@ -52,9 +52,6 @@ class data_frame(object):
                 (payload << 16) | \
                 (crc)
 
-    def set_frame(self, bin):
-        self.__bin = bin
-
     def get_frame(self):
         return self.__bin
     

@@ -7,6 +7,7 @@ from ipaddress import IPv4Address
 class ack_frame(object):
     __DEL = 0x7E
 
+    # criar bin_flow_recv
     def __init__(self, sequence, destination_address, source_address):
         if type(sequence) != int:
             raise TypeError('sequence must be int.')
@@ -29,6 +30,10 @@ class ack_frame(object):
     
     def get_frame(self):
         return self.__bin
+
+    #arrumar, nao funciona
+    def set_sequence(self, sequence):
+        self.__bin = (sequence << 32) 
     
     def get_sequence(self):
         return (self.__bin >> 64) & 0xFF
