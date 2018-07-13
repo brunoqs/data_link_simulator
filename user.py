@@ -7,21 +7,23 @@ source_adress = str(input())
 destination_address = str(input())
 
 l_sdu = ''
-try:
-    l_sdu = data.Data_Request(ipadress.ip_address(destination_address))
-except data_link as TimeOutError:#Erro na requisição de dados. Precisa contabilizar
-    #contabilizar
-except data_link as CRCError:
-    #contabilizar
-    
-    
+data.Data_Request(ipadress.ip_address(destination_address))
 
-try: 
-    l_sdu = data.Data_Indication(ipadress.ip_address(destination_address),
+
+l_sdu = data.Data_Indication(ipadress.ip_address(destination_address), #recebimento de dados
                          ipadress.ip_address(source_adress))
-except data_link as TimeOutError: #Erro. Precisa contabilizar
-    #contabilizar
-except data_link as CRCError:
-    #contabilizar
+
+logFile = open('logFile.txt', 'r')
+result = logFile.readLines() #Lendo o arquivo(log de erros)
+
+result = [s.rstrip() for s in result]#tirando os fins de linha e os espaços de cada posição da lista
+result = [_str.split(' ') for _str in result] 
 
 
+def show_received_data(): #Os dados a serem mostrados aqui, são somente os retornados pela função?
+    print(l_sdu)
+    
+
+def manegement_module(): #Módulo onde serão feitas as estatísticas com base no log de erros, sendo elas: mensagens enviadas \
+                         #mensagens recebidas corretamente, erros detectados e retransmissões
+    pass
