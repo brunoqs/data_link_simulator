@@ -1,5 +1,5 @@
 #
-# testado 100% ok
+# 100% ok - bug crc lenght > 127 corrigido
 #
 
 from ipaddress import IPv4Address
@@ -52,9 +52,6 @@ class data_frame(object):
                 (payload << 16) | \
                 (crc)
 
-    def set_frame(self, bin):
-        self.__bin = bin
-
     def get_frame(self):
         return self.__bin
     
@@ -97,7 +94,7 @@ class data_frame(object):
     
     def crc_check(self):
         bitstring_frame = bin(self.__bin).lstrip('0b')
-        bitstring = bitstring_frame[8:-16]
+        bitstring = bitstring_frame[7:-16] # 7 pq 0 no inicio do 0x7E desloca a string
         polynom = bin(self.__POLYNOM_GEN).lstrip('0b')
         check = bitstring_frame[-16:]
         return self.__crc_check(bitstring, polynom, check)
