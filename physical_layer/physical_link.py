@@ -31,7 +31,10 @@ class physical_link:
 			self.__socket.connect((str(self.__dst), self.__port))
 
 
-	def F_Data_Request(self, octeto):
+	def F_Data_Request(self, octeto, ack=None):
+		if ack == None:
+			if random.randrange(10) == 5:
+				octeto += "1"
 		self.__socket.send(octeto.encode())
 		time.sleep(0.01)
 
