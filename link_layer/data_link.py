@@ -10,14 +10,14 @@ import time
 class data_link:
 	@staticmethod
 	def Data_Indication(destination_address, source_address, l_sdu):
-		frame = data_frame(1, destination_address, source_address, l_sdu)
+		frame = data_frame(1, destination_address, IPv4Address("0.0.0.0"), l_sdu)
 		port_serv = 11000
 		port_client = 12000
 
-		resend = True
-		while resend: # enquanto receber nack
-			# envia um frame 
-			physical_send = physical_link(destination_address, source_address, port_serv)
+		reesend = True
+		while reesend: # enquanto receber nack
+			# envia um frame
+			physical_send = physical_link(destination_address, IPv4Address("0.0.0.0"), port_serv)
 			frame_bitstring = bin(frame.get_frame()).lstrip("0b")
 			lenght_bin = len(frame_bitstring)
 			for i in range(0, lenght_bin, 8):
@@ -38,11 +38,11 @@ class data_link:
 
 			# abre um ack para ver seu sequence 0=ack 1=nack
 			ack_check = ack_frame(bin_flow_recv=int(ack, base=2)) 
-			n_ack = ack_check.get_sequence()
-			if n_ack == 0b00000001:
-				resend = True
+			n_ack = bin(ack_check.get_sequence()).lstrip("0b")
+			if n_ack == "1":
+				reesend = True
 			else:
-				resend = False
+				reesend = False
 			physical_recv.close()
 
 			port_client += 1
@@ -66,6 +66,7 @@ class data_link:
 					frame += request.decode()
 				else:
 					flag = False
+
 			physical_recv.close()
 
 			# espera 2s para enviar um ack apos abrir o frame e testar o crc
