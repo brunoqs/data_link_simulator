@@ -14,8 +14,8 @@ class data_link:
 		port_serv = 11000
 		port_client = 12000
 
-		reesend = True
-		while reesend: # enquanto receber nack
+		resend = True
+		while resend: # enquanto receber nack
 			# envia um frame
 			physical_send = physical_link(destination_address, IPv4Address("0.0.0.0"), port_serv)
 			frame_bitstring = bin(frame.get_frame()).lstrip("0b")
@@ -38,11 +38,11 @@ class data_link:
 
 			# abre um ack para ver seu sequence 0=ack 1=nack
 			ack_check = ack_frame(bin_flow_recv=int(ack, base=2)) 
-			n_ack = bin(ack_check.get_sequence()).lstrip("0b")
-			if n_ack == "1":
-				reesend = True
+			n_ack = ack_check.get_sequence()
+			if n_ack == 0b00000001:
+				resend = True
 			else:
-				reesend = False
+				resend = False
 			physical_recv.close()
 
 			port_client += 1
