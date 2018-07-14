@@ -2,7 +2,7 @@
 TODO: Estruturar o quadro a ser enviado de acordo com a especificacao do trabalho
       Dar um jeito de criar uma falha na mensagem
 
-'''
+
 
 from socket import *
 import random
@@ -11,10 +11,6 @@ import random
 polynomial_bitstring = "10100000000000011"
 
 def crc_remainder(input_bitstring, polynomial_bitstring, initial_filler):
-    '''
-    Calculates the CRC remainder of a string of bits using a chosen polynomial.
-    initial_filler should be '1' or '0'.
-    '''
     len_input = len(input_bitstring)
     initial_padding = initial_filler * (len(polynomial_bitstring) - 1)
     input_padded_array = list(input_bitstring + initial_padding)
@@ -60,4 +56,9 @@ while resend:
         print("mensagem corrompida, enviar novamente")
         resend = True
 
-client_socket.close()
+client_socket.close()'''
+
+from link_layer import data_link
+from ipaddress import IPv4Address
+
+data_link.Data_Request(IPv4Address("127.0.0.1"), "teste")
