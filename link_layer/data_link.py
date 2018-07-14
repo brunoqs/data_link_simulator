@@ -84,22 +84,6 @@ class data_link:
 				response = False # nao precisa esperar outro frame
 			# crc = False envia ack com sequence = 1 (nack)
 			else:
-<<<<<<< HEAD
-				flag = False
-		print (frame)
-		physical_recv.close()
-
-		time.sleep(2)
-		physical_send = physical_link(destination_address, IPv4Address("0.0.0.0"), 12000)
-		frame_check = data_frame(bin_flow_recv=int(frame, base=2))
-		if frame_check.crc_check():
-			ack_bitstring = bin(ack.get_frame()).lstrip("0b")
-			lenght_bin = len(ack_bitstring)
-			for i in range(0, lenght_bin, 8):
-				physical_send.F_Data_Request(ack_bitstring[i:i+8])
-			physical_send.fin_data()
-			physical_send.close()
-=======
 				ack.set_sequence(1) #nack
 				ack_bitstring = bin(ack.get_frame()).lstrip("0b")
 				lenght_bin = len(ack_bitstring)
@@ -114,4 +98,3 @@ class data_link:
 			port_serv += 1
 		
 		return data_frame.bin_to_str(frame_check.get_payload()) # l_sdu
->>>>>>> master
