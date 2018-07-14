@@ -36,7 +36,7 @@ class data_link:
 					flag = False
 			print (ack)
 			# abre um ack para ver seu sequence 0=ack 1=nack
-			ack_check = ack_frame(bin_flow_recv=int(ack, base=2))
+			ack_check = ack_frame(bin_flow_recv=int(ack, base=2)) 
 			n_ack = bin(ack_check.get_sequence()).lstrip("0b")
 			if n_ack == "1":
 				reesend = True
