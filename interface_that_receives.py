@@ -4,7 +4,7 @@ from link_layer.data_link import data_link
 data = data_link()
 destination_adress = str(input())
 l_sdu = str(input())
-Data_Request(ipadress.ip_address(destination_address), l_sdu)
+data.Data_Request(ipaddress.ip_address(destination_address), l_sdu)
 
 
 
