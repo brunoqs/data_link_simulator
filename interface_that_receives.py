@@ -2,10 +2,10 @@ import ipaddress
 from link_layer.data_link import data_link
 
 data = data_link()
-destination_adress = str(input())
-l_sdu = Data_Request(ipadress.ip_address(destination_address))
+destination_address = str(input())
+l_sdu = str(input())
+data.Data_Request(ipaddress.ip_address(destination_address), l_sdu)
 
-print("Message:", l_sdu)
 
 
 
