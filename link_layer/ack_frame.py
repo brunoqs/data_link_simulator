@@ -41,7 +41,7 @@ class ack_frame(object):
             raise ValueError('sequence is wrong.')
 
         self.__bin &= ((0xFF << 72) | 0xFFFFFFFFFFFFFFFF)
-        self.__bin |= ((0xFF << 72) | (sequence << 64) | 0xFFFFFFFFFFFFFFFF)
+        self.__bin |= ((sequence << 64) | 0xFFFFFFFFFFFFFFFF)
     
     def get_sequence(self):
         return (self.__bin >> 64) & 0xFF
