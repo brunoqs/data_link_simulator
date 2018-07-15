@@ -8,7 +8,7 @@ class data_frame(object):
     __DEL = 0x7E
     __POLYNOM_GEN = 0b11000000000000101
 
-    def __init__(self, sequence=None, destination_address=None, source_address=None, payload=None, bin_flow_recv=None):
+    def __init__(self, sequence=None, destination_address=None, source_address=IPv4Address('0.0.0.0'), payload=None, bin_flow_recv=None):
         if bin_flow_recv != None:
             if type(bin_flow_recv) != int:
                 raise TypeError('bin_flow_recv must be int.')

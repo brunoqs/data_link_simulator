@@ -34,8 +34,8 @@ class physical_link:
 
     def F_Data_Indication(self, octeto, ack=None):
         if ack == None:
-            if self.__random_noisy_tx():
-                octeto = self.__damage_packet(octeto)
+             if self.__random_noisy_tx():
+                 octeto = self.__damage_packet(octeto)
         self.__socket.send(octeto.encode())
         time.sleep(0.01)
 
@@ -49,7 +49,7 @@ class physical_link:
         return randint(0, 1000) == randint(400, 600)
     
     def __random_noisy_tx(self):
-        return randint(0, 100) == randint(40, 60)
+        return randint(0, 200) == randint(91, 99)
     
     def __damage_packet(self, octeto):
         binary = int(octeto, base=2)
