@@ -2,6 +2,7 @@ from .data_frame import data_frame
 from .ack_frame import ack_frame
 
 from physical_layer import physical_link
+from log_csv import log
 
 from ipaddress import IPv4Address 
 
@@ -49,6 +50,9 @@ class data_link:
 
 	@staticmethod
 	def __send_frame(frame, destination_address, source_address, port_serv, port_client):
+		logger = log('indication_log.csv')
+		
+		logger.msg_sent(frame)
 		resend = True
 		while resend: # enquanto receber nack
 			# envia um frame
@@ -73,9 +77,11 @@ class data_link:
 
 			# abre um ack para ver seu sequence 0=ack 1=nack
 			ack_check = ack_frame(bin_flow_recv=int(ack, base=2)) 
+			logger.msg_recv(ack_check)
 			n_ack = ack_check.get_sequence()
-			if n_ack == data_link.__NACK_ONE or n_ack == data_link.__NACK_TWO:
+			if n_ack in (data_link.__NACK_ONE, data_link.__NACK_TWO):
 				resend = True
+				logger.msg_retr(frame)
 			else:
 				resend = False
 			
@@ -83,6 +89,8 @@ class data_link:
 
 			port_client += 1
 			port_serv += 1
+		
+		logger.close()
 
 		return port_serv, port_client
 
@@ -108,6 +116,8 @@ class data_link:
 
 	@staticmethod
 	def __recv_frame(sequence, destination_address, source_address, port_serv, port_client):
+		logger = log('request_log.csv')
+
 		ack = ack_frame(sequence, destination_address, source_address)
 		response = True
 		while response: # enquanto tiver que esperar outro pacote
@@ -128,8 +138,10 @@ class data_link:
 			time.sleep(2)
 			physical_send = physical_link(destination_address, IPv4Address("0.0.0.0"), port_serv)
 			frame_check = data_frame(bin_flow_recv=int(frame, base=2))
+			logger.msg_recv(frame_check)
 			# crc = True envia ack com sequence = 0 (ack)
 			if frame_check.crc_check():
+				logger.msg_sent(ack)
 				ack_bitstring = bin(ack.get_frame()).lstrip("0b")
 				lenght_bin = len(ack_bitstring)
 				for i in range(0, lenght_bin, 8):
@@ -139,6 +151,7 @@ class data_link:
 				response = False # nao precisa esperar outro frame
 			# crc = False envia ack com sequence = 1 (nack)
 			else:
+				logger.crc_error(frame_check)
 				if sequence == data_link.__ACK_ONE:
 					ack.set_sequence(data_link.__NACK_ONE) #nack
 				else:
@@ -154,5 +167,7 @@ class data_link:
 			ack.set_sequence(sequence) # apos enviar um nack voltar para ack
 			port_client += 1
 			port_serv += 1
+		
+		logger.close()
 		
 		return frame_check, port_serv, port_client

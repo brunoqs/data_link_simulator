@@ -33,9 +33,9 @@ class physical_link:
             self.__socket.connect((str(self.__dst), self.__port))
 
     def F_Data_Indication(self, octeto, ack=None):
-        # if ack == None:
-        #     if self.__random_noisy_tx():
-        #         octeto = self.__damage_packet(octeto)
+        if ack == None:
+             if self.__random_noisy_tx():
+                 octeto = self.__damage_packet(octeto)
         self.__socket.send(octeto.encode())
         time.sleep(0.01)
 
