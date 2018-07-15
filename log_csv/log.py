@@ -9,7 +9,21 @@ class log:
 
     def __init__(self, path):
         self.__file = open(path, 'a')
+    
+    def clear(self):
         self.__file.truncate(0)
+        self.__file.write(
+            'FRAME_TYPE' + 
+            log.__SEP + 
+            'EVENT' + 
+            log.__SEP + 
+            'DATE' + 
+            log.__SEP + 
+            'TIME' +
+            log.__SEP + 
+            'FRAME_HEX' + 
+            log.__CRL
+        )
     
     def close(self):
         self.__file.close()
@@ -26,7 +40,9 @@ class log:
             log.__SEP + 
             event + 
             log.__SEP + 
-            self.__format_time(localtime()) + 
+            self.__format_date(localtime()) + 
+            log.__SEP + 
+            self.__format_time(localtime()) +
             log.__SEP + 
             hex(frame.get_frame()) + 
             log.__CRL
@@ -48,6 +64,9 @@ class log:
         self.__event('msg_retr', frame)
 
     def __format_time(self, time):
-        return '{}/{:02d}/{:02d} {:02d}:{:02d}:{:02d}'.format(time.tm_year, time.tm_mon, time.tm_mday, time.tm_hour, time.tm_min, time.tm_sec)
+        return '{:02d}:{:02d}:{:02d}'.format(time.tm_hour, time.tm_min, time.tm_sec)
+
+    def __format_date(self, time):
+        return '{}/{:02d}/{:02d}'.format(time.tm_year, time.tm_mon, time.tm_mday)
 
         

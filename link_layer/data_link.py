@@ -20,6 +20,10 @@ class data_link:
 
 	@staticmethod
 	def Data_Indication(destination_address, source_address, l_sdu):
+		logger = log('indication_log.csv')
+		logger.clear()
+		logger.close()
+
 		port_serv = 11000
 		port_client = 12000
 
@@ -96,6 +100,10 @@ class data_link:
 
 	@staticmethod
 	def Data_Request(destination_address, source_address):
+		logger = log('request_log.csv')
+		logger.clear()
+		logger.close()
+
 		port_serv = 12000
 		port_client = 11000
 

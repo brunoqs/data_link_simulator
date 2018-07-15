@@ -49,7 +49,7 @@ class physical_link:
         return randint(0, 1000) == randint(400, 600)
     
     def __random_noisy_tx(self):
-        return randint(0, 100) == randint(40, 60)
+        return randint(0, 200) == randint(91, 99)
     
     def __damage_packet(self, octeto):
         binary = int(octeto, base=2)
