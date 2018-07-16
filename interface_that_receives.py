@@ -7,9 +7,7 @@ def manegement_module():
         for reader in csv.reader(csvfile):
             print(reader, "\n")
 
-data = data_link()
 source_address = str(input())
 destination_address = str(input())
-data.Data_Request(IPv4Address(destination_address), IPv4Address(source_address))
-#~ data.Data_Request(ipaddress.ip_address(destination_address), ipaddress.ip_address(source_address))
+data_link.Data_Request(IPv4Address(destination_address), IPv4Address(source_address))
 manegement_module()

@@ -7,11 +7,9 @@ def manegement_module():
         for reader in csv.reader(csvfile):
             print(reader, "\n")
 
-data = data_link()
 source_address = str(input())
 destination_address = str(input())
 l_sdu = str(input())
-data.Data_Indication(IPv4Address(destination_address), IPv4Address(source_address), l_sdu)
-#~ data.Data_Indication(ipaddress.ip_address(destination_address), #envia dado
-                     #~ ipaddress.ip_address(source_address), l_sdu)
+#enviando um dado
+data_link.Data_Indication(IPv4Address(destination_address), IPv4Address(source_address), l_sdu)
 manegement_module()
